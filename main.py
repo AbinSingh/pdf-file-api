@@ -8,11 +8,18 @@ from datetime import datetime, timedelta
 from typing import Optional
 from pdf_processor import process_pdf
 import uvicorn
+from dotenv import load_dotenv
+import os
 
 # Secret key for JWT (keep it secret and safe)
-SECRET_KEY = "your_secret_key"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Access environment variables
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))  # Default to 30 if not set
 
 # Password hashing context
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -101,7 +108,7 @@ async def read_root():
 
 @app.post("/upload-pdf/")
 async def upload_pdf(file: UploadFile = File(...), current_user: dict = Depends(get_current_user)):
-
+    print(file.content_type)
     if file.content_type != "application/pdf":
         raise HTTPException(status_code=400, detail="Invalid file type. Only PDFs are allowed.")
 
