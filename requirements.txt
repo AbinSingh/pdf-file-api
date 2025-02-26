@@ -24,3 +24,4 @@ urllib3~=2.3.0
 annotated-types~=0.7.0
 idna~=3.10
 charset-normalizer~=3.4.1
+bcrypt
