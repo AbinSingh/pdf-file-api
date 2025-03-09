@@ -17,7 +17,14 @@ pipeline {
         stage('Start Minikube') {
             steps {
                 script {
-                    sh "minikube status || minikube start --driver=docker"
+                    powershell '''
+                    if (!(minikube status -ErrorAction SilentlyContinue)) {
+                        Write-Host "Minikube is not running. Starting Minikube..."
+                        minikube start --driver=docker
+                    } else {
+                        Write-Host "Minikube is already running."
+                    }
+                    '''
                 }
             }
         }
@@ -25,8 +32,11 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    sh "kubectl apply -f k8s/deployment.yaml"
-                    sh "kubectl apply -f k8s/service.yaml"
+                    powershell '''
+                    Write-Host "Applying Kubernetes configurations..."
+                    kubectl apply -f k8s/deployment.yaml
+                    kubectl apply -f k8s/service.yaml
+                    '''
                 }
             }
         }
@@ -34,9 +44,13 @@ pipeline {
         stage('Verify Deployment') {
             steps {
                 script {
-                    sh "kubectl get pods -n $KUBE_NAMESPACE"
-                    sh "kubectl get svc fastapi-service -n $KUBE_NAMESPACE"
-                    sh "minikube service fastapi-service --url"
+                    powershell '''
+                    Write-Host "Fetching pod and service details..."
+                    kubectl get pods -n $env:KUBE_NAMESPACE
+                    kubectl get svc fastapi-service -n $env:KUBE_NAMESPACE
+                    Write-Host "Minikube Service URL:"
+                    minikube service fastapi-service --url
+                    '''
                 }
             }
         }
