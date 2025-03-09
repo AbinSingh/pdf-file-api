@@ -49,8 +49,11 @@ pipeline {
                     Write-Host "Fetching pod and service details..."
                     kubectl get pods -n $env:KUBE_NAMESPACE
                     kubectl get svc fastapi-service -n $env:KUBE_NAMESPACE
-                    Write-Host "Minikube Service URL:"
-                    minikube service fastapi-service --url --format "{{.URL}}"
+
+                    Write-Host "Fetching Minikube Service URL..."
+                    $NODE_PORT = kubectl get svc fastapi-service -n $env:KUBE_NAMESPACE -o=jsonpath="{.spec.ports[0].nodePort}"
+                    $MINIKUBE_IP = minikube ip
+                    Write-Host "FastAPI Service URL: http://$MINIKUBE_IP`:$NODE_PORT"
                     '''
                 }
             }
