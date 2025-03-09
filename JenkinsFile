@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        GIT_REPO = 'https://github.com/your-repo.git' // Replace with your repo URL
+        GIT_REPO = 'https://github.com/AbinSingh/pdf-file-api.git' // Replace with your repo URL
         DOCKER_IMAGE = 'abinsr/my-fastapi-app:latest' // Your Docker Hub image
         KUBE_NAMESPACE = 'default'
     }
