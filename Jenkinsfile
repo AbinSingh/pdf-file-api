@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        GIT_REPO = 'https://github.com/AbinSingh/pdf-file-api.git' // Replace with your repo URL
-        DOCKER_IMAGE = 'abinsr/my-fastapi-app:latest' // Your Docker Hub image
+        GIT_REPO = 'https://github.com/AbinSingh/pdf-file-api.git'
+        DOCKER_IMAGE = 'abinsr/my-fastapi-app:latest'
         KUBE_NAMESPACE = 'default'
     }
 
@@ -18,7 +18,8 @@ pipeline {
             steps {
                 script {
                     powershell '''
-                    if (!(minikube status -ErrorAction SilentlyContinue)) {
+                    $status = minikube status
+                    if ($LASTEXITCODE -ne 0) {
                         Write-Host "Minikube is not running. Starting Minikube..."
                         minikube start --driver=docker
                     } else {
@@ -49,7 +50,7 @@ pipeline {
                     kubectl get pods -n $env:KUBE_NAMESPACE
                     kubectl get svc fastapi-service -n $env:KUBE_NAMESPACE
                     Write-Host "Minikube Service URL:"
-                    minikube service fastapi-service --url
+                    minikube service fastapi-service --url --format "{{.URL}}"
                     '''
                 }
             }
